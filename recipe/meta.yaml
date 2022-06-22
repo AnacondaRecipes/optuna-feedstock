@@ -49,6 +49,10 @@ about:
   dev_url: https://github.com/optuna/optuna
 
 extra:
+  services:
+    - recipe-maintainers:
+       - bkreider
+    - comment: Customer request
   recipe-maintainers:
     - g-votte
     - HideakiImamura
