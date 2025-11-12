@@ -1,5 +1,5 @@
 {% set name = "optuna" %}
-{% set version = "3.2.0" %}
+{% set version = "4.5.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,11 +7,11 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 683d8693643a761a41d251a6b8e13263b24acacf9fc46a9233d5f6aa3ce5c683
+  sha256: 264844da16dad744dea295057d8bc218646129c47567d52c35a201d9f99942ba
 
 build:
   number: 0
-  skip: True  # [py<37]
+  skip: True  # [py<38]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   entry_points:
     - optuna = optuna.cli:main
@@ -20,30 +20,87 @@ requirements:
   host:
     - pip
     - python
-    - setuptools
+    - setuptools >=61.1.0
     - wheel
   run:
+    - python
     - alembic >=1.5.0
-    - cmaes >=0.9.1
+    - packaging >=20.0
+    - sqlalchemy >=1.4.2
     - colorlog
     - numpy
-    - packaging >=20.0
-    - python
     - pyyaml
-    - sqlalchemy >=1.3.0
     - tqdm
+  run_constrained:
+    - asv >=0.5.0
+    - typing_extensions >=3.10.0.0
+    - cmaes >=0.12.0
+    - plotly >=4.9.0
+    - scikit-learn >=0.24.2
+    - protobuf >=5.28.1
+
+# No modules: 'google', 'fakeredis'
+{% set ignore_tests = "--ignore=tests/artifacts_tests/test_gcs.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/samplers_tests/test_cmaes.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/samplers_tests/test_grid.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/search_space_tests/test_group_decomposed.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/search_space_tests/test_intersection.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/journal_tests/test_combination_with_grpc.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/journal_tests/test_journal.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_callbacks.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_grpc.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_heartbeat.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_storages.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_with_server.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/study_tests/test_dataframe.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/study_tests/test_optimize.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/study_tests/test_study.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/test_cli.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/trial_tests/test_frozen.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/trial_tests/test_trial.py" %}
+
+{% set deselect_tests = "" %}
+# ARM64 Linux is failing to initialize kaleido subprocess
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_contour.py::test_plot_contour" %}  # [linux and aarch64]
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_edf_plot_no_trials" %}  # [linux and aarch64]
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_multiple_studies" %}  # [linux and aarch64]
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_target" %}  # [linux and aarch64]
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_target_name" %}  # [linux and aarch64]
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_intermediate_plot.py::test_plot_intermediate_values" %}  # [linux and aarch64]
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_optimization_history.py::test_get_optimization_history_plot" %}  # [linux and aarch64]
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_parallel_coordinate.py::test_plot_parallel_coordinate" %}  # [linux and aarch64]
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_param_importances.py::test_plot_param_importances" %}  # [linux and aarch64]
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_pareto_front.py::test_get_pareto_front_plot" %}  # [linux and aarch64]
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_rank.py::test_plot_rank" %}  # [linux and aarch64]
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_slice.py::test_plot_slice" %}  # [linux and aarch64]
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_terminator_improvement.py::test_plot_terminator_improvement" %}  # [linux and aarch64]
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_timeline.py::test_get_timeline_plot" %}  # [linux and aarch64]
 
 test:
+  source_files:
+    - tests
   imports:
     - optuna
   requires: 
     - pip
+    - pytest
+    - pytorch
+    - pandas
+    - plotly
+    - matplotlib
+    - boto3
+    - moto
+    - cmaes
+    - scipy
+    - scikit-learn
+    - python-kaleido
   commands:
     - pip check
     - optuna --help
+    - pytest -v tests {{ ignore_tests }} {{ deselect_tests }}
 
 about:
-  home: https://optuna.org/
+  home: https://optuna.org
   license: MIT
   license_family: MIT
   license_file: LICENSE
@@ -51,7 +108,7 @@ about:
   description: |
     Optuna is an automatic hyperparameter optimization software framework, particularly designed for machine learning. 
     It features an imperative, define-by-run style user API. 
-  doc_url: https://optuna.readthedocs.io/
+  doc_url: https://optuna.readthedocs.io
   dev_url: https://github.com/optuna/optuna
 
 extra:
