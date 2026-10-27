@@ -82,9 +82,11 @@ test:
   commands:
     - pip check
     - optuna --help
-    # fakeredis cannot EVAL; win/aarch64 cannot lock the grpc port file; CI sets an empty CA bundle
-    - python -c "import os,sys,subprocess; [os.environ.pop(k,None) for k in ('REQUESTS_CA_BUNDLE','AWS_CA_BUNDLE','SSL_CERT_FILE') if not str(os.environ.get(k,'')).strip()]; raise SystemExit(subprocess.call([sys.executable,'-m','pytest','-vv','tests','-k','not journal_redis and not redis_default and not grpc']+'''{{ deselect_tests }}'''.split()))"  # [win or (linux and aarch64)]
-    - python -c "import os,sys,subprocess; [os.environ.pop(k,None) for k in ('REQUESTS_CA_BUNDLE','AWS_CA_BUNDLE','SSL_CERT_FILE') if not str(os.environ.get(k,'')).strip()]; raise SystemExit(subprocess.call([sys.executable,'-m','pytest','-vv','tests','-k','not journal_redis and not redis_default']+'''{{ deselect_tests }}'''.split()))"  # [not (win or (linux and aarch64))]
+    - unset REQUESTS_CA_BUNDLE AWS_CA_BUNDLE  # [unix]
+    - set "REQUESTS_CA_BUNDLE=" && set "AWS_CA_BUNDLE="  # [win]
+    # fakeredis cannot EVAL; win/aarch64 cannot lock the grpc port file
+    - pytest -vv tests {{ deselect_tests }} -k "not journal_redis and not redis_default and not grpc"  # [win or (linux and aarch64)]
+    - pytest -vv tests {{ deselect_tests }} -k "not journal_redis and not redis_default"  # [not (win or (linux and aarch64))]
 
 about:
   home: https://optuna.org
