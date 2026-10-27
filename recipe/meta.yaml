@@ -1,13 +1,13 @@
 {% set name = "optuna" %}
-{% set version = "4.6.0" %}
+{% set version = "5.0.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 89e38c2447c7f793a726617b8043f01e31f0bad54855040db17eb3b49404a369
+  sha256: 358bb878b7b1e20e90dc944ac4261796dd3d5c2b7860aa960a08fc10e0b5beff
 
 build:
   number: 0
@@ -33,33 +33,13 @@ requirements:
     # Only used in optuna/cli.py
     - pyyaml
   run_constrained:
-    - asv >=0.5.0
-    - typing_extensions >=3.10.0.0
+    # optional extra, bounded only. document extra skipped (docs).
+    # unbounded optional deps omitted (no-op): boto3, google-cloud-storage, pandas, redis, scipy, torch, greenlet, grpcio
     - cmaes >=0.12.0
     - matplotlib-base !=3.6.0
     - plotly >=4.9.0
     - scikit-learn >=0.24.2
     - protobuf >=5.28.1
-
-# No modules: 'google', 'fakeredis'
-{% set ignore_tests = "--ignore=tests/artifacts_tests/test_gcs.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/samplers_tests/test_cmaes.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/samplers_tests/test_grid.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/search_space_tests/test_group_decomposed.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/search_space_tests/test_intersection.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/journal_tests/test_combination_with_grpc.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/journal_tests/test_journal.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_callbacks.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_grpc.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_heartbeat.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_storages.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_with_server.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/study_tests/test_dataframe.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/study_tests/test_optimize.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/study_tests/test_study.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_cli.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/trial_tests/test_frozen.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/trial_tests/test_trial.py" %}
 
 {% set deselect_tests = "" %}
 # ARM64 Linux is failing to initialize kaleido subprocess
@@ -83,23 +63,29 @@ test:
     - tests
   imports:
     - optuna
-  requires: 
+  requires:
     - pip
     - pytest
     - pytorch
     - pandas
-    - plotly
+    - plotly >=4.9.0,<7
     - matplotlib
     - boto3
     - moto
     - cmaes
-    - scipy
+    - scipy >=1.9.2
     - scikit-learn
     - python-kaleido
+    - fakeredis
+    - grpcio
+    - greenlet
+    - protobuf
+    - google-cloud-storage
   commands:
     - pip check
     - optuna --help
-    - pytest -v tests {{ ignore_tests }} {{ deselect_tests }}
+    # pkgs/main lupa is LuaJIT-only (no lupa.lua51), so fakeredis cannot run Redis EVAL
+    - pytest -vv tests {{ deselect_tests }} -k "not journal_redis and not redis_default"
 
 about:
   home: https://optuna.org
