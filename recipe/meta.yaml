@@ -82,8 +82,10 @@ test:
   commands:
     - pip check
     - optuna --help
-    # pkgs/main lupa is LuaJIT-only (no lupa.lua51), so fakeredis cannot run Redis EVAL
-    - pytest -vv tests {{ deselect_tests }} -k "not journal_redis and not redis_default"
+    # fakeredis cannot run Redis EVAL (pkgs/main lupa is LuaJIT-only); aarch64 cannot lock /tmp/optuna_find_free_port.lock
+    - unset REQUESTS_CA_BUNDLE AWS_CA_BUNDLE SSL_CERT_FILE && pytest -vv tests {{ deselect_tests }} -k "not journal_redis and not redis_default and not grpc"  # [linux and aarch64]
+    - unset REQUESTS_CA_BUNDLE AWS_CA_BUNDLE SSL_CERT_FILE && pytest -vv tests {{ deselect_tests }} -k "not journal_redis and not redis_default"  # [unix and not (linux and aarch64)]
+    - pytest -vv tests {{ deselect_tests }} -k "not journal_redis and not redis_default"  # [win]
 
 about:
   home: https://optuna.org
