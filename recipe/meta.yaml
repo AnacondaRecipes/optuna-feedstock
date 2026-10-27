@@ -40,21 +40,21 @@ requirements:
     - protobuf >=5.28.1
 
 {% set deselect_tests = "" %}
-# ARM64 Linux is failing to initialize kaleido subprocess
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_contour.py::test_plot_contour" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_edf_plot_no_trials" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_multiple_studies" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_target" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_target_name" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_intermediate_plot.py::test_plot_intermediate_values" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_optimization_history.py::test_get_optimization_history_plot" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_parallel_coordinate.py::test_plot_parallel_coordinate" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_param_importances.py::test_plot_param_importances" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_pareto_front.py::test_get_pareto_front_plot" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_rank.py::test_plot_rank" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_slice.py::test_plot_slice" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_terminator_improvement.py::test_plot_terminator_improvement" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_timeline.py::test_get_timeline_plot" %}  # [linux and aarch64]
+# python-kaleido image export needs Chrome, which CI workers do not have
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_contour.py::test_plot_contour" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_edf_plot_no_trials" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_multiple_studies" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_target" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_target_name" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_intermediate_plot.py::test_plot_intermediate_values" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_optimization_history.py::test_get_optimization_history_plot" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_parallel_coordinate.py::test_plot_parallel_coordinate" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_param_importances.py::test_plot_param_importances" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_pareto_front.py::test_get_pareto_front_plot" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_rank.py::test_plot_rank" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_slice.py::test_plot_slice" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_terminator_improvement.py::test_plot_terminator_improvement" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_timeline.py::test_get_timeline_plot" %}
 
 test:
   source_files:
