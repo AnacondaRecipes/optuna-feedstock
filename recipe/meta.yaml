@@ -33,8 +33,6 @@ requirements:
     # Only used in optuna/cli.py
     - pyyaml
   run_constrained:
-    # optional extra, bounded only. document extra skipped (docs).
-    # unbounded optional deps omitted (no-op): boto3, google-cloud-storage, pandas, redis, scipy, torch, greenlet, grpcio
     - cmaes >=0.12.0
     - matplotlib-base !=3.6.0
     - plotly >=4.9.0
