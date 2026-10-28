@@ -1,13 +1,13 @@
 {% set name = "optuna" %}
-{% set version = "4.6.0" %}
+{% set version = "5.0.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 89e38c2447c7f793a726617b8043f01e31f0bad54855040db17eb3b49404a369
+  sha256: 358bb878b7b1e20e90dc944ac4261796dd3d5c2b7860aa960a08fc10e0b5beff
 
 build:
   number: 0
@@ -33,73 +33,60 @@ requirements:
     # Only used in optuna/cli.py
     - pyyaml
   run_constrained:
-    - asv >=0.5.0
-    - typing_extensions >=3.10.0.0
     - cmaes >=0.12.0
     - matplotlib-base !=3.6.0
     - plotly >=4.9.0
     - scikit-learn >=0.24.2
     - protobuf >=5.28.1
 
-# No modules: 'google', 'fakeredis'
-{% set ignore_tests = "--ignore=tests/artifacts_tests/test_gcs.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/samplers_tests/test_cmaes.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/samplers_tests/test_grid.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/search_space_tests/test_group_decomposed.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/search_space_tests/test_intersection.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/journal_tests/test_combination_with_grpc.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/journal_tests/test_journal.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_callbacks.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_grpc.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_heartbeat.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_storages.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/storages_tests/test_with_server.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/study_tests/test_dataframe.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/study_tests/test_optimize.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/study_tests/test_study.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/test_cli.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/trial_tests/test_frozen.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/trial_tests/test_trial.py" %}
-
 {% set deselect_tests = "" %}
-# ARM64 Linux is failing to initialize kaleido subprocess
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_contour.py::test_plot_contour" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_edf_plot_no_trials" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_multiple_studies" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_target" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_target_name" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_intermediate_plot.py::test_plot_intermediate_values" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_optimization_history.py::test_get_optimization_history_plot" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_parallel_coordinate.py::test_plot_parallel_coordinate" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_param_importances.py::test_plot_param_importances" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_pareto_front.py::test_get_pareto_front_plot" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_rank.py::test_plot_rank" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_slice.py::test_plot_slice" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_terminator_improvement.py::test_plot_terminator_improvement" %}  # [linux and aarch64]
-{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_timeline.py::test_get_timeline_plot" %}  # [linux and aarch64]
+# python-kaleido image export needs Chrome, which CI workers do not have
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_contour.py::test_plot_contour" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_edf_plot_no_trials" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_multiple_studies" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_target" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_edf.py::test_plot_edf_with_target_name" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_intermediate_plot.py::test_plot_intermediate_values" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_optimization_history.py::test_get_optimization_history_plot" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_parallel_coordinate.py::test_plot_parallel_coordinate" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_param_importances.py::test_plot_param_importances" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_pareto_front.py::test_get_pareto_front_plot" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_rank.py::test_plot_rank" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_slice.py::test_plot_slice" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_terminator_improvement.py::test_plot_terminator_improvement" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/visualization_tests/test_timeline.py::test_get_timeline_plot" %}
 
 test:
   source_files:
     - tests
   imports:
     - optuna
-  requires: 
+  requires:
     - pip
     - pytest
     - pytorch
     - pandas
-    - plotly
+    - plotly >=4.9.0,<7
     - matplotlib
     - boto3
     - moto
     - cmaes
-    - scipy
+    - scipy >=1.9.2
     - scikit-learn
     - python-kaleido
+    - fakeredis
+    - grpcio
+    - greenlet
+    - protobuf
+    - google-cloud-storage
   commands:
     - pip check
     - optuna --help
-    - pytest -v tests {{ ignore_tests }} {{ deselect_tests }}
+    - unset REQUESTS_CA_BUNDLE AWS_CA_BUNDLE  # [unix]
+    - set "REQUESTS_CA_BUNDLE=" && set "AWS_CA_BUNDLE="  # [win]
+    # fakeredis cannot EVAL; win/aarch64 cannot lock the grpc port file
+    - pytest -vv tests {{ deselect_tests }} -k "not journal_redis and not redis_default and not grpc"  # [win or (linux and aarch64)]
+    - pytest -vv tests {{ deselect_tests }} -k "not journal_redis and not redis_default"  # [not (win or (linux and aarch64))]
 
 about:
   home: https://optuna.org
